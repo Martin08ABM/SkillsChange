@@ -1,13 +1,26 @@
+---
+  // Importar la configuración de Tailwind
+  import '../styles/global.css';
+
+  // Poder cambiar el título de la página dependiendo en que pantalla se encuentre
+  const { title } = Astro.props;
+---
 <!doctype html>
-<html lang="en">
+<html lang="es">
 	<head>
+    <title>{ title }</title><!-- Título que varía según la pantalla -->
+    <!-- Etiquetas SEO -->
+    <meta name="description" content="Plataforma de intercambio de servicios mediante trueques o pagos">
+    <meta name="description" content="Trueques por servicios">
+    <meta name="description" content="Pago por servicios">
+    <meta name="keywords" content="pago por servicio">
+    <meta name="robots">
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+    <!-- Favicon -->
+		<link rel="icon" type="image/svg+xml" href="/favicon.ico" />
 	</head>
-	<body>
+	<body class="h-full flex flex-col">
 		<slot />
 	</body>
 </html>
@@ -18,5 +31,6 @@
 		margin: 0;
 		width: 100%;
 		height: 100%;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	}
 </style>

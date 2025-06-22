@@ -1,0 +1,46 @@
+---
+  import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/astro/components";
+---
+<header class="w-full h-28 bg-neutral-600 flex flex-col sm:flex-row sm:justify-between sm:items-center">
+  <div class="flex flex-col sm:flex-row sm:items-center w-full">
+    <!-- Logo de la web -->
+    <div class="flex flex-row p-4 sm:p-2">
+      <a href="/">
+        <img src="/logo.webp" alt="Logo de la web" class="w-28 mt-[-4px] ml-6 sm:ml-4">
+      </a>
+
+      <!-- Barra de búsqueda -->
+      <nav class="mt-5 sm:mt-4 sm:ml-8 w-full sm:w-auto">
+        <form action="/buscar" method="GET" class="flex flex-col sm:flex-row items-start sm:items-center">
+          <input
+            type="search"
+            id="query"
+            name="q"
+            placeholder="Buscar servicios..."
+            results="6"
+            autosave="search"
+            class="px-2 py-1 rounded-xl bg-white mt-4 w-full sm:w-160 h-10 sm:mt-3 sm:mr-4 text-neutral-800 border-black border-2"
+            aria-label="Barra para buscar servicios"
+          >
+          <button type="submit" class="bg-white border-black border-2 w-10 h-10 p-2 items-center justify-center align-middle rounded-full mt-[-4px] sm:mt-4">
+            <img src="../../src/assets/search.svg" class="w-5">
+          </button>
+        </form>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Botones de registro o perfil del usuario -->
+  <div class="flex justify-center sm:justify-end mr-8 sm:mt-0">
+    <div 
+      class="w-12.5 p-2 bg-neutral-200 h-12 rounded-full border-4 border-neutral-600 hover:bg-neutral-400 transition ease-in-out"
+    >
+      <SignedOut>
+        <SignInButton mode="modal" />
+      </SignedOut>
+      <SignedIn>
+        <UserButton />
+      </SignedIn>
+    </div>
+  </div> 
+</header>
