@@ -3,10 +3,22 @@
   import Header from '../components/Header.astro';
   import Footer from '../components/Footer.astro';
   import NavBar from '../components/NavBar.astro';
+  import ServiceCard from '../components/ServiceCard.astro';
+
+  // Extraer el ID  del usuario
+  import { currentUser } from '@clerk/astro/server';
+
+  const user = await currentUser();
+  const {userId, redirectToSignIn} = Astro.locals.auth()
+
+  if (!userId) {
+    return redirectToSignIn()
+  }
 ---
 
 <Layout title="SkillsChange - Inicio">
   <Header />
     <NavBar />
+    <ServiceCard />
   <Footer />
 </Layout>
