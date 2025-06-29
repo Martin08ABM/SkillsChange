@@ -1,24 +1,54 @@
 ---
+  // IMPORTACIÓN DE COMPONENTES
   import Layout from '../layouts/Layout.astro';
   import Header from '../components/Header.astro';
   import Footer from '../components/Footer.astro';
   import NavBar from '../components/NavBar.astro';
-  import ServiceCard from '../components/ServiceCard.astro';
 
-  // Extraer el ID  del usuario
-  import { currentUser } from '@clerk/astro/server';
-
-  const user = await currentUser();
-  const {userId, redirectToSignIn} = Astro.locals.auth()
-
+  // BLOQUE 1: Registro de usuarios y recolección del userId
+  // Recojer el userId y redirectToSignIn
+  const { userId, redirectToSignIn } = Astro.locals.auth();
+  // Variable user = currentUser
+  const user = await Astro.locals.currentUser();
+  // Si no hay usuario, redirige (opcional)
   if (!userId) {
-    return redirectToSignIn()
+    return redirectToSignIn();
+  }
+
+  // BLOQUE 2: Creación de sesión en Supabase
+  // Crear una sesión en Supabase
+  import { createClient } from "@supabase/supabase-js";
+  const supabase = createClient(
+    import.meta.env.SUPABASE_URL,
+    import.meta.env.SUPABASE_ANON_KEY
+  );
+
+  // Función RPC para obtener datos de Supabase
+  const { data, error } = await supabase.rpc("get_random_top_services");
+  if (error) {
+    console.error("Supabase error:", error.message);
   }
 ---
 
 <Layout title="SkillsChange - Inicio">
   <Header />
     <NavBar />
-    <ServiceCard />
+      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 p-4">
+        {data && data.length > 0 ? (
+          data.map(service => (
+            <a href={`/service/${service.id}`} class="block">
+              <div class="border-2 border-black bg-gray-700 rounded-2xl p-4 shadow hover:scale-105 transition">
+                <img src={service.image_url} alt={service.title} class="rounded-xl w-full h-40 object-cover mb-2"/>
+                <h2 class="text-lg font-bold">{service.title}</h2>
+                <p class="text-sm text-gray-300">{service.description}</p>
+                <p class="text-yellow-400 mt-2">⭐ {service.avg_rating.toFixed(1)}</p>
+              </div>
+            </a>
+          ))
+        ) : (
+          <p class="text-center col-span-full text-gray-600">No se encontraron servicios destacados.</p>
+        )}
+      </section>
   <Footer />
 </Layout>
+<!-- Pal que lo vea, wuenaps esta es una "firma" que dejo por si acazo-->

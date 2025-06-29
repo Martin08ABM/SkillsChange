@@ -1,5 +1,12 @@
 ---
   import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/astro/components";
+
+  // Enseñar el botón de "Crear un anuncio"
+  const userIsLoged =  await Astro.locals.currentUser();
+
+  if (userIsLoged) {
+
+  }
 ---
 <header class="w-full h-28 bg-neutral-600 flex flex-col sm:flex-row sm:justify-between sm:items-center">
   <div class="flex flex-col sm:flex-row sm:items-center w-full">
@@ -28,6 +35,10 @@
         </form>
       </nav>
     </div>
+  </div>
+
+  <!-- Botón de Crear un anúncio -->
+  <div class="display-none">
   </div>
 
   <!-- Botones de registro o perfil del usuario -->
