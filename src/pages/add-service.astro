@@ -1,0 +1,73 @@
+---
+// IMPORTACIÓN DE COMPONENTES
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import NavBar from '../components/NavBar.astro';
+---
+
+<Layout title="TeCambio - Crear un anuncio">
+  <Header showPostButton={false} />
+  <NavBar />
+
+  <div class="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 max-w-xs sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl border-2 border-black bg-white shadow-lg rounded-xl mt-4 sm:mt-6 lg:mt-8 mb-4 sm:mb-6 lg:mb-8 mx-4 sm:mx-6 lg:mx-12">
+    <form method="POST" class="flex flex-col gap-4 sm:gap-6">
+      <!-- Nombre del anuncio -->
+      <div class="flex flex-col">
+        <label class="text-black text-lg sm:text-xl font-bold mb-2">
+          Nombre del anuncio:
+        </label>
+        <input type="text" placeholder="Nombre anuncio" class="border-2 border-black rounded-xl p-2 text-sm sm:text-base" required />
+      </div>
+
+      <!-- Descripción del anuncio -->
+      <div class="flex flex-col">
+        <label class="text-black text-lg sm:text-xl font-bold mb-2">Descripción del anuncio:</label>
+        <input type="text" placeholder="Descripción anuncio" class="border-2 border-black rounded-xl p-2 text-sm sm:text-base" required />
+      </div>
+
+      <!-- Imágenes del anuncio -->
+      <div class="flex flex-col">
+        <label class="text-black text-lg sm:text-xl font-bold mb-2">Subir imágenes del servicio:</label>
+        <div class="flex items-center gap-2">
+          <input type="file" class="border-2 border-gray-400 p-2 w-full max-w-sm sm:max-w-md lg:max-w-lg text-sm sm:text-base" accept=".jpg,.jpeg,.png,.webp" required />
+        </div>
+        <h5 class="text-xs sm:text-sm mt-1">*Formatos admitidos: jpg, jpeg, png, webp</h5>
+      </div>
+
+      <!-- ¿Anúncio físico o online? -->
+      <div class="flex flex-col">
+        <label class="text-black text-lg sm:text-xl font-bold mb-2">Anúncio de servicio físico o online:</label>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="fisico" class="w-4 h-4" />
+            <label for="fisico" class="text-sm sm:text-base">Servicio físico</label>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="online" class="w-4 h-4" />
+            <label for="online" class="text-sm sm:text-base">Servicio online</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Elegir método de "pago" o intercambio -->
+      <div class="flex flex-col">
+        <label class="text-black text-lg sm:text-xl font-bold mb-2">Elegir método de pago o intercambio:</label>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="pago" class="w-4 h-4" />
+            <label for="pago" class="text-sm sm:text-base">Pago</label>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="trueque" class="w-4 h-4" />
+            <label for="trueque" class="text-sm sm:text-base">Intercambio</label>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="border-2 border-black w-20 sm:w-24 md:w-28 lg:w-32 rounded-2xl p-2 text-sm sm:text-base hover:bg-gray-300 duration-200 ease-in-out self-start">Publicar</button>
+    </form>
+  </div>
+
+  <Footer />
+</Layout>

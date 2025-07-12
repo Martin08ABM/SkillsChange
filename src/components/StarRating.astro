@@ -1,0 +1,8 @@
+---
+const { rating, maxRating = 5 } = Astro.props;
+---
+<div class="flex">
+  {Array.from({ length: maxRating }).map((_, index) => (
+    <span key={index} class={`mx-1 text-xl ${index < rating ? 'text-yellow-400' : 'text-gray-300'}`}>⭐</span>
+  ))}
+</div>

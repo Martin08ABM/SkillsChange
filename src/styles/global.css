@@ -1,1 +1,132 @@
 @import "tailwindcss";
+
+/* Media queries para dispositivos móviles, tablets y PC */
+/* Base styles (móviles) */
+body {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Tablets - desde 768px */
+@media (min-width: 768px) {
+  body {
+    font-size: 18px;
+  }
+}
+
+/* Desktop - desde 1024px */
+@media (min-width: 1024px) {
+  body {
+    font-size: 20px;
+  }
+}
+
+/* Responsive grid adjustments */
+.responsive-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .responsive-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Card responsive styles */
+.service-card {
+  transition: transform 0.2s ease;
+}
+
+.service-card:hover {
+  transform: scale(1.02);
+}
+
+@media (max-width: 640px) {
+  .service-card:hover {
+    transform: scale(1.01);
+  }
+}
+
+/* Form responsive styles */
+.form-container {
+  width: 100%;
+  max-width: 90vw;
+}
+
+@media (min-width: 640px) {
+  .form-container {
+    max-width: 80vw;
+  }
+}
+
+@media (min-width: 768px) {
+  .form-container {
+    max-width: 70vw;
+  }
+}
+
+@media (min-width: 1024px) {
+  .form-container {
+    max-width: 60vw;
+  }
+}
+
+/* Text responsive adjustments */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+  }
+}
+
+/* Image responsive styles */
+.responsive-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+@media (max-width: 640px) {
+  .responsive-image {
+    height: 8rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .responsive-image {
+    height: 9rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .responsive-image {
+    height: 10rem;
+  }
+}

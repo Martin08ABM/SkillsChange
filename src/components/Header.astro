@@ -1,57 +1,60 @@
 ---
   import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/astro/components";
+  const user = await Astro.locals.currentUser();
 
-  // Enseñar el botón de "Crear un anuncio"
-  const userIsLoged =  await Astro.locals.currentUser();
-
-  if (userIsLoged) {
-
-  }
+  const { showPostButton = true } = Astro.props;
 ---
-<header class="w-full h-28 bg-neutral-600 flex flex-col sm:flex-row sm:justify-between sm:items-center">
-  <div class="flex flex-col sm:flex-row sm:items-center w-full">
+<header class="w-full h-16 sm:h-20 md:h-24 lg:h-28 bg-neutral-600 flex flex-row justify-between items-center px-2 sm:px-4">
+  <div class="flex flex-row items-center gap-2 sm:gap-4 lg:gap-6">
     <!-- Logo de la web -->
-    <div class="flex flex-row p-4 sm:p-2">
-      <a href="/">
-        <img src="/logo.webp" alt="Logo de la web" class="w-28 mt-[-4px] ml-6 sm:ml-4">
-      </a>
+    <a href="/">
+      <img src="/logo.webp" alt="Logo de la web" class="w-16 sm:w-20 md:w-24 lg:w-28">
+    </a>
 
-      <!-- Barra de búsqueda -->
-      <nav class="mt-5 sm:mt-4 sm:ml-8 w-full sm:w-auto">
-        <form action="/buscar" method="GET" class="flex flex-col sm:flex-row items-start sm:items-center">
-          <input
-            type="search"
-            id="query"
-            name="q"
-            placeholder="Buscar servicios..."
-            results="6"
-            autosave="search"
-            class="px-2 py-1 rounded-xl bg-white mt-4 w-full sm:w-160 h-10 sm:mt-3 sm:mr-4 text-neutral-800 border-black border-2"
-            aria-label="Barra para buscar servicios"
-          >
-          <button type="submit" class="bg-white border-black border-2 w-10 h-10 p-2 items-center justify-center align-middle rounded-full mt-[-4px] sm:mt-4">
-            <img src="../../src/assets/search.svg" class="w-5">
+    <!-- Barra de búsqueda -->
+    <nav class="flex-1">
+      <form action="/buscar" method="GET" class="flex flex-row items-center gap-1 sm:gap-2">
+        <input
+          type="search"
+          id="query"
+          name="q"
+          placeholder="Buscar..."
+          results="6"
+          autosave="search"
+          class="px-2 sm:px-3 py-1 sm:py-2 rounded-xl bg-white w-24 sm:w-32 md:w-48 lg:w-64 xl:w-80 h-8 sm:h-10 text-neutral-800 border-black border-2 text-xs sm:text-sm md:text-base"
+          aria-label="Barra para buscar servicios"
+        >
+          <button type="submit" class="bg-white border-black border-2 w-8 h-8 sm:w-10 sm:h-10 p-1 sm:p-2 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+            <img src="/src/assets/search.svg" class="w-4 h-4 sm:w-5 sm:h-5" alt="Buscar">
+          </button>
+      </form>
+    </nav>
+  </div>
+
+  <!-- Sección de botones de acción -->
+  <div class="flex flex-row items-center gap-1 sm:gap-2 md:gap-3 lg:gap-4">
+    {showPostButton && user && (
+      <div id="postAnounce">
+        <form action="/add-service" method="post">
+          <button type="submit" class="border-2 border-black bg-black rounded-xl w-20 sm:w-24 md:w-32 lg:w-40 xl:w-44 p-1 sm:p-2 hover:bg-gray-700 transition ease-in-out duration-150">
+            <p class="text-white text-xs sm:text-sm md:text-base lg:text-[15px] font-bold">Crear anuncio</p>
           </button>
         </form>
-      </nav>
+      </div>
+    )}
+
+    <!-- Botones de registro o perfil del usuario -->
+    <div class="flex justify-center">
+      <div 
+        class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 p-1 sm:p-2 bg-neutral-200 rounded-full border-2 sm:border-4 border-neutral-600 hover:bg-neutral-400 transition-all duration-200 flex items-center justify-center"
+      >
+        <SignedOut>
+          <SignInButton mode="modal" />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </div>
     </div>
   </div>
-
-  <!-- Botón de Crear un anúncio -->
-  <div class="display-none">
-  </div>
-
-  <!-- Botones de registro o perfil del usuario -->
-  <div class="flex justify-center sm:justify-end mr-8 sm:mt-0">
-    <div 
-      class="w-12.5 p-2 bg-neutral-200 h-12 rounded-full border-4 border-neutral-600 hover:bg-neutral-400 transition ease-in-out"
-    >
-      <SignedOut>
-        <SignInButton mode="modal" />
-      </SignedOut>
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
-    </div>
-  </div> 
 </header>
