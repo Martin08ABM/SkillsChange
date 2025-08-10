@@ -4,47 +4,54 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import NavBar from '../components/NavBar.astro';
+
+const { userId, redirectToSignIn } = Astro.locals.auth();
+if (!userId) {
+  return redirectToSignIn();
+}
 ---
 
 <Layout title="TeCambio - Crear un anuncio">
   <Header showPostButton={false} />
   <NavBar />
 
-  <div class="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 max-w-xs sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl border-2 border-black bg-white shadow-lg rounded-xl mt-4 sm:mt-6 lg:mt-8 mb-4 sm:mb-6 lg:mb-8 mx-4 sm:mx-6 lg:mx-12">
-    <form method="POST" class="flex flex-col gap-4 sm:gap-6">
+  <div class="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 max-w-xs sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl border-2 border-black bg-white shadow-lg rounded-xl mt-4 sm:mt-6 lg:mt-8 mb-4 sm:mb-6 lg:mb-8 sm:mx-6 lg:mx-12 mx-auto">
+    <h1 class="text-2xl font-bold text-center mb-4">Crear Nuevo Anuncio</h1>
+    
+    <form class="flex flex-col gap-4 sm:gap-6" id="service-form">
       <!-- Nombre del anuncio -->
       <div class="flex flex-col">
         <label class="text-black text-lg sm:text-xl font-bold mb-2">
           Nombre del anuncio:
         </label>
-        <input type="text" placeholder="Nombre anuncio" class="border-2 border-black rounded-xl p-2 text-sm sm:text-base" required />
+        <input type="text" placeholder="Nombre anuncio" class="border-2 border-black rounded-xl p-2 text-sm sm:text-base" id="titulo" name="title" required />
       </div>
 
       <!-- Descripción del anuncio -->
       <div class="flex flex-col">
         <label class="text-black text-lg sm:text-xl font-bold mb-2">Descripción del anuncio:</label>
-        <input type="text" placeholder="Descripción anuncio" class="border-2 border-black rounded-xl p-2 text-sm sm:text-base" required />
+        <textarea placeholder="Descripción detallada del servicio" class="border-2 border-black rounded-xl p-2 text-sm sm:text-base min-h-[100px]" id="descripcion" name="description" required></textarea>
       </div>
 
       <!-- Imágenes del anuncio -->
       <div class="flex flex-col">
         <label class="text-black text-lg sm:text-xl font-bold mb-2">Subir imágenes del servicio:</label>
         <div class="flex items-center gap-2">
-          <input type="file" class="border-2 border-gray-400 p-2 w-full max-w-sm sm:max-w-md lg:max-w-lg text-sm sm:text-base" accept=".jpg,.jpeg,.png,.webp" required />
+          <input type="file" class="border-2 border-gray-400 p-2 w-full max-w-sm sm:max-w-md lg:max-w-lg text-sm sm:text-base" accept=".jpg,.jpeg,.png,.webp" id="imagen" name="image" />
         </div>
-        <h5 class="text-xs sm:text-sm mt-1">*Formatos admitidos: jpg, jpeg, png, webp</h5>
+        <h5 class="text-xs sm:text-sm mt-1">*Formatos admitidos: jpg, jpeg, png, webp (opcional)</h5>
       </div>
 
       <!-- ¿Anúncio físico o online? -->
       <div class="flex flex-col">
-        <label class="text-black text-lg sm:text-xl font-bold mb-2">Anúncio de servicio físico o online:</label>
+        <label class="text-black text-lg sm:text-xl font-bold mb-2">Tipo de servicio:</label>
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <div class="flex items-center gap-2">
-            <input type="checkbox" id="fisico" class="w-4 h-4" />
+            <input type="checkbox" id="fisico" name="service_type" class="w-4 h-4" />
             <label for="fisico" class="text-sm sm:text-base">Servicio físico</label>
           </div>
           <div class="flex items-center gap-2">
-            <input type="checkbox" id="online" class="w-4 h-4" />
+            <input type="checkbox" id="online" name="service_type" class="w-4 h-4" />
             <label for="online" class="text-sm sm:text-base">Servicio online</label>
           </div>
         </div>
@@ -52,22 +59,198 @@ import NavBar from '../components/NavBar.astro';
 
       <!-- Elegir método de "pago" o intercambio -->
       <div class="flex flex-col">
-        <label class="text-black text-lg sm:text-xl font-bold mb-2">Elegir método de pago o intercambio:</label>
+        <label class="text-black text-lg sm:text-xl font-bold mb-2">Método de intercambio:</label>
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <div class="flex items-center gap-2">
-            <input type="checkbox" id="pago" class="w-4 h-4" />
+            <input type="radio" id="pago" name="payment-method" class="w-4 h-4" value="paid" />
             <label for="pago" class="text-sm sm:text-base">Pago</label>
           </div>
           <div class="flex items-center gap-2">
-            <input type="checkbox" id="trueque" class="w-4 h-4" />
+            <input type="radio" id="trueque" name="payment-method" class="w-4 h-4" value="barter" />
             <label for="trueque" class="text-sm sm:text-base">Intercambio</label>
           </div>
         </div>
       </div>
 
-      <button type="submit" class="border-2 border-black w-20 sm:w-24 md:w-28 lg:w-32 rounded-2xl p-2 text-sm sm:text-base hover:bg-gray-300 duration-200 ease-in-out self-start">Publicar</button>
+      <!-- Establecer precio del anuncio -->
+      <div class="flex-col hidden" id="price-section">
+        <label class="text-black text-lg sm:text-xl font-bold mb-2">Precio del servicio (€)</label>
+        <input type="number" step="0.01" min="0" placeholder="0.00" class="border-2 border-black rounded-xl p-2 text-sm sm:text-base" id="precio" name="price" />
+      </div>
+
+      <!-- Elegir método de pago preferido -->
+      <div class="flex-col hidden" id="payment-method-section">
+        <label class="text-black text-lg sm:text-xl font-bold mb-2">Método de pago preferido:</label>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="flex items-center gap-2">
+            <input type="radio" id="stripe" name="payment-provider" class="w-4 h-4" value="stripe" />
+            <label for="stripe" class="text-sm sm:text-base flex items-center gap-2">
+              <span>Stripe</span>
+              <span class="text-xs text-gray-500">(Tarjeta de crédito/débito)</span>
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="radio" id="paypal" name="payment-provider" class="w-4 h-4" value="paypal" />
+            <label for="paypal" class="text-sm sm:text-base flex items-center gap-2">
+              <span>PayPal</span>
+              <span class="text-xs text-gray-500">(PayPal/Tarjeta)</span>
+            </label>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 mt-2">*Los compradores pagarán usando este método cuando compren tu servicio</p>
+      </div>
+
+      <button type="button" id="submit-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-xl transition-colors duration-200 self-start">
+        Publicar Anuncio
+      </button>
     </form>
+
+    <!-- Mensaje de éxito -->
+    <div id="success-message" class="hidden bg-green-100 border-2 border-green-500 text-green-700 p-4 rounded-xl mt-4">
+      <h3 class="font-bold mb-2">¡Anuncio publicado exitosamente!</h3>
+      <p class="mb-3">Tu anuncio ha sido creado y está disponible para los usuarios.</p>
+      <div class="flex gap-2">
+        <a href="/marketplace" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">Ver Marketplace</a>
+        <button id="create-another" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">Crear Otro</button>
+      </div>
+    </div>
   </div>
 
   <Footer />
 </Layout>
+
+<script>
+  const form = document.getElementById("service-form");
+  const title = document.getElementById("titulo");
+  const description = document.getElementById("descripcion");
+  const pagoRadio = document.getElementById("pago");
+  const truequeRadio = document.getElementById("trueque");
+  const priceSection = document.getElementById("price-section");
+  const paymentMethodSection = document.getElementById("payment-method-section");
+  const priceInput = document.getElementById("precio");
+  const submitButton = document.getElementById("submit-button");
+  const successMessage = document.getElementById("success-message");
+  const createAnotherButton = document.getElementById("create-another");
+  const fisicoCheckbox = document.getElementById("fisico");
+  const onlineCheckbox = document.getElementById("online");
+  const imageInput = document.getElementById("imagen");
+
+  // Mostrar/ocultar sección de precio y método de pago
+  function togglePaymentSections() {
+    if (pagoRadio.checked) {
+      priceSection.classList.remove("hidden");
+      paymentMethodSection.classList.remove("hidden");
+      priceInput.required = true;
+    } else {
+      priceSection.classList.add("hidden");
+      paymentMethodSection.classList.add("hidden");
+      priceInput.required = false;
+    }
+  }
+
+  pagoRadio.addEventListener("change", togglePaymentSections);
+  truequeRadio.addEventListener("change", togglePaymentSections);
+
+  // Manejar el envío del formulario
+  submitButton.addEventListener("click", async (e) => {
+    e.preventDefault();
+    
+    const titleValue = title.value.trim();
+    const descriptionValue = description.value.trim();
+    const priceValue = parseFloat(priceInput.value) || 0;
+    
+    // Validaciones básicas
+    if (!titleValue || !descriptionValue) {
+      alert("Por favor, completa el nombre y la descripción del anuncio.");
+      return;
+    }
+    
+    if (!pagoRadio.checked && !truequeRadio.checked) {
+      alert("Por favor, selecciona un método de pago o intercambio.");
+      return;
+    }
+    
+    if (!fisicoCheckbox.checked && !onlineCheckbox.checked) {
+      alert("Por favor, selecciona al menos un tipo de servicio (físico u online).");
+      return;
+    }
+    
+    if (pagoRadio.checked) {
+      if (!priceValue || priceValue <= 0) {
+        alert("Por favor, introduce un precio válido.");
+        return;
+      }
+      
+      const stripeRadio = document.getElementById("stripe");
+      const paypalRadio = document.getElementById("paypal");
+      
+      if (!stripeRadio.checked && !paypalRadio.checked) {
+        alert("Por favor, selecciona un método de pago preferido.");
+        return;
+      }
+    }
+    
+    // Preparar datos del formulario
+    const formData = new FormData();
+    formData.append('title', titleValue);
+    formData.append('description', descriptionValue);
+    formData.append('price', priceValue.toString());
+    formData.append('currency', 'EUR');
+    formData.append('is_physical', fisicoCheckbox.checked.toString());
+    formData.append('is_online', onlineCheckbox.checked.toString());
+    formData.append('payment_type', pagoRadio.checked ? 'paid' : 'barter');
+    
+    if (pagoRadio.checked) {
+      const selectedPaymentMethod = document.querySelector('input[name="payment-provider"]:checked');
+      if (selectedPaymentMethod) {
+        formData.append('preferred_payment_method', selectedPaymentMethod.value);
+      }
+    }
+
+    const imageFile = imageInput.files[0];
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+    
+    // Enviar datos
+    submitButton.disabled = true;
+    submitButton.textContent = "Publicando...";
+    
+    try {
+      const response = await fetch('/api/services/create', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        // Mostrar mensaje de éxito
+        form.classList.add("hidden");
+        successMessage.classList.remove("hidden");
+      } else {
+        alert(result.error || "Error al crear el anuncio");
+        submitButton.disabled = false;
+        submitButton.textContent = "Publicar Anuncio";
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al crear el anuncio. Inténtalo de nuevo.");
+      submitButton.disabled = false;
+      submitButton.textContent = "Publicar Anuncio";
+    }
+  });
+  
+  // Botón para crear otro anuncio
+  createAnotherButton.addEventListener("click", () => {
+    form.classList.remove("hidden");
+    successMessage.classList.add("hidden");
+    
+    // Limpiar formulario
+    document.getElementById("service-form").reset();
+    priceSection.classList.add("hidden");
+    paymentMethodSection.classList.add("hidden");
+    submitButton.disabled = false;
+    submitButton.textContent = "Publicar Anuncio";
+  });
+</script>

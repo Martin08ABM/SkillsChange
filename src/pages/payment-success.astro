@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import NavBar from '../components/NavBar.astro';
+---
+
+<Layout title="TeCambio - Pago Exitoso">
+  <Header showPostButton={false} />
+  <NavBar />
+
+  <div class="flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="max-w-md w-full bg-white border-2 border-green-500 rounded-xl p-8 text-center shadow-lg">
+      <div class="mb-6">
+        <svg class="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      
+      <h1 class="text-2xl font-bold text-green-600 mb-4">¡Pago Exitoso!</h1>
+      <p class="text-gray-600 mb-6">
+        Tu pago ha sido procesado correctamente. El anunciante ha sido notificado y pronto se pondrá en contacto contigo.
+      </p>
+      
+      <div class="space-y-4">
+        <a href="/" class="block w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+          Volver al inicio
+        </a>
+        <a href="/profile" class="block w-full bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">
+          Ver mis servicios
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <Footer />
+</Layout>
+
+<script>
+  // Capturar parámetros de la URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('session_id');
+  const orderId = urlParams.get('orderId');
+  
+  if (sessionId) {
+    // Manejar éxito de Stripe
+    console.log('Stripe payment successful:', sessionId);
+  } else if (orderId) {
+    // Manejar éxito de PayPal
+    console.log('PayPal payment successful:', orderId);
+    
+    // Capturar el pago de PayPal
+    fetch(`/api/payments/paypal?orderId=${orderId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          console.log('PayPal payment captured:', data.captureId);
+        }
+      })
+      .catch(error => {
+        console.error('Error capturing PayPal payment:', error);
+      });
+  }
+</script>
