@@ -1,0 +1,153 @@
+
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import NavBar from '../../components/NavBar.astro';
+import { getDb } from '../../lib/db';
+
+const { id } = Astro.params;
+
+let service = null;
+let error = null;
+
+const currencySymbols = {
+  EUR: '€',
+  USD: '$',
+  GBP: '£',
+};
+
+const PLACEHOLDER_IMAGE = '/logo.webp';
+
+try {
+  const db = await getDb();
+  service = await db.get('SELECT * FROM services WHERE id = ?', id);
+  if (!service) {
+    error = 'Anuncio no encontrado.';
+    Astro.response.status = 404;
+  }
+} catch (e) {
+  console.error(`Error fetching service ${id}:`, e);
+  error = 'Error al cargar el anuncio.';
+  Astro.response.status = 500;
+}
+---
+
+<Layout title={service ? service.title : 'Anuncio no encontrado'}>
+  <Header />
+  <NavBar />
+
+  <main class="container mx-auto px-4 py-8">
+    {error && (
+      <div class="text-center py-16">
+        <h1 class="text-2xl font-bold text-red-600">{error}</h1>
+        <a href="/" class="text-blue-500 hover:underline mt-4 inline-block">Volver al inicio</a>
+      </div>
+    )}
+
+    {service && (
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <!-- Columna de la Imagen -->
+        <div>
+          <img src={service.image_url || PLACEHOLDER_IMAGE} alt={`Imagen de ${service.title}`} class="w-full h-auto object-cover rounded-xl border-2 border-black shadow-lg"/>
+        </div>
+
+        <!-- Columna de Detalles y Compra -->
+        <div class="flex flex-col">
+          <div class="flex items-start justify-between mb-2">
+            <h1 class="text-4xl font-bold text-gray-800 flex-1">{service.title}</h1>
+            <div class="flex gap-2 ml-4">
+              {service.is_physical ? <span class="px-3 py-1 bg-orange-100 text-orange-800 text-sm rounded-full font-semibold">Físico</span> : null}
+              {service.is_online ? <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full font-semibold">Online</span> : null}
+            </div>
+          </div>
+          
+          <p class="text-gray-600 my-4 text-lg">{service.description}</p>
+
+          <div class="mt-auto pt-6">
+            {service.payment_type === "paid" ? (
+              <div class="bg-gray-50 border-2 border-gray-200 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <p class="text-lg text-gray-600">Precio:</p>
+                  <div class="flex items-baseline gap-2">
+                    <span class="text-4xl font-bold text-green-600">{currencySymbols[service.currency] || ''}{service.price}</span>
+                    <span class="text-xl text-gray-500">{service.currency}</span>
+                  </div>
+                </div>
+                <button 
+                  class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 buy-button font-semibold text-lg"
+                  data-service-id={service.id}
+                  data-title={service.title}
+                  data-description={service.description}
+                  data-price={service.price}
+                  data-currency={service.currency}
+                >
+                    Comprar Ahora con Stripe
+                </button>
+              </div>
+            ) : (
+              <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 text-center">
+                <h2 class="text-2xl font-bold text-blue-700">Servicio de Intercambio</h2>
+                <p class="text-blue-600 mt-2">Contacta con el vendedor para acordar los términos del intercambio.</p>
+                <button class="mt-4 w-full bg-gray-500 text-white py-3 px-6 rounded-lg hover:bg-gray-600 transition-colors font-semibold text-lg">
+                  🤝 Contactar
+                </button>
+              </div>
+            )}
+            <div class="text-sm text-gray-500 mt-4 text-center">
+              Publicado: {new Date(service.created_at).toLocaleDateString()}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  // Manejar compra de servicios con Stripe
+  document.querySelectorAll('.buy-button').forEach(button => {
+    button.addEventListener('click', async (e) => {
+      const target = e.currentTarget;
+      const { serviceId, title, description, price, currency } = target.dataset;
+      
+      target.disabled = true;
+      target.innerHTML = '⏳ Procesando...';
+      
+      try {
+        await processStripePayment(title, description, parseFloat(price), currency);
+      } catch (error) {
+        console.error('Error procesando el pago:', error);
+        alert('Error al procesar el pago. Inténtalo de nuevo.');
+        target.disabled = false;
+        target.innerHTML = '💳 Comprar Ahora con Stripe';
+      }
+    });
+  });
+  
+  async function processStripePayment(title, description, price, currency) {
+    const response = await fetch('/api/payments/stripe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: price,
+        title: title,
+        description: description,
+        currency: currency.toLowerCase(),
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.sessionId) {
+      // Redirigir a la página de pago de Stripe
+      window.location.href = `https://checkout.stripe.com/pay/${data.sessionId}`;
+    } else {
+      throw new Error(data.error || 'Error al crear la sesión de pago de Stripe.');
+    }
+  }
+</script>
